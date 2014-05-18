@@ -1,0 +1,16 @@
+<resources>
+
+    <style name="AppTheme" parent="android:Theme.Light">
+        <item name="android:textViewStyle">@style/TextView</item>
+        <item name="android:buttonStyle">@style/Button</item>
+    </style>
+
+    <style name="TextView" parent="android:Widget.TextView">
+        <item name="customTypeface">@string/typeface_audiowide</item>
+    </style>
+
+    <style name="Button" parent="android:Widget.Button">
+        <item name="customTypefaceIgnoreParents">true</item>
+    </style>
+
+</resources>
