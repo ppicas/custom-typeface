@@ -11,10 +11,13 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
+        // Register a Typeface creating first the object, and then registering the object
+        // with a name.
         Typeface typeface = Typeface.createFromAsset(getAssets(), "permanent-marker.ttf");
         CustomTypeface.getInstance().registerTypeface("permanent-marker", typeface);
 
-        typeface = Typeface.createFromAsset(getAssets(), "audiowide.ttf");
-        CustomTypeface.getInstance().registerTypeface("audiowide", typeface);
+        // Also you can directly use this shortcut to let CustomTypeface to create the
+        // Typeface object for you.
+        CustomTypeface.getInstance().registerTypeface("audiowide", getAssets(), "audiowide.ttf");
     }
 }

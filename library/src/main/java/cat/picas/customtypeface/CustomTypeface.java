@@ -1,6 +1,8 @@
 package cat.picas.customtypeface;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
@@ -23,7 +25,110 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO Document CustomTypeface
+ * This class can be used to automatically apply custom {@link Typeface} to views inflated from
+ * any XML.
+ * <p>
+ * This class is intended to be used from a {@link LayoutInflater.Factory#onCreateView} method,
+ * or from {@link LayoutInflater.Factory2#onCreateView}. From one of this methods
+ * just call to {@link #createView} and it will take care to delegate the view creation to the
+ * system {@link LayoutInflater}, and after the creation try to apply a custom {@code Typeface}
+ * if the new created view is an instance of {@link TextView}, or any other derived class.
+ * <p>
+ * Here is an example of the use of this class. First you should register the {@code Typeface}
+ * that you will use from the XML layouts. A good place to do this is in the {@code Application}
+ * {@code onCreate} method.
+ * </p>
+ * <pre><code>
+ * public class App extends Application {
+ *     {@literal @Override}
+ *     public void onCreate() {
+ *         super.onCreate();
+ *
+ *         // Register a Typeface creating first the object, and then registering the object
+ *         // with a name.
+ *         Typeface typeface = Typeface.createFromAsset(getAssets(), "permanent-marker.ttf");
+ *         CustomTypeface.getInstance().registerTypeface("permanent-marker", typeface);
+ *
+ *         // Also you can directly use this shortcut to let CustomTypeface to create the
+ *         // Typeface object for you.
+ *         CustomTypeface.getInstance().registerTypeface("audiowide", getAssets(), "audiowide.ttf");
+ *     }
+ * }
+ * </code></pre>
+ * <p>
+ * The next step is override the {@link Activity#onCreateView} method and delegate the view
+ * creation to {@code CustomTypeface}.
+ * </p>
+ * <pre><code>
+ * public class MainActivity extends Activity {
+ *
+ *     // ...
+ *
+ *     {@literal @Override}
+ *     protected void onCreate(Bundle savedInstanceState) {
+ *         super.onCreate(savedInstanceState);
+ *         setContentView(R.layout.activity_main);
+ *     }
+ *
+ *     {@literal @Override}
+ *     public View onCreateView(String name, Context context, AttributeSet attrs) {
+ *         return CustomTypeface.getInstance().createView(name, context, attrs);
+ *     }
+ *
+ *     // ...
+ *
+ * }
+ * </code></pre>
+ * <p>
+ * Now all the templates inflated in the context of this {@code Activity} will apply a
+ * custom {@code Typeface} if it's defined in the XML. Check following the layout file.
+ * </p>
+ * <pre>{@code
+ * <LinearLayout
+ *     xmlns:android="http://schemas.android.com/apk/res/android"
+ *     xmlns:tools="http://schemas.android.com/tools"
+ *     xmlns:app="http://schemas.android.com/apk/res-auto"
+ *     ...
+ *     />
+ *
+ *     ...
+ *
+ *     <Button
+ *         android:text="Permanent maker"
+ *         android:layout_width="match_parent"
+ *         android:layout_height="wrap_content"
+ *         android:textSize="22sp"
+ *         app:customTypeface="permanent-marker"
+ *         tools:ignore="MissingPrefix"/>
+ *
+ *     ...
+ *
+ * </LinearLayout>
+ * }</pre>
+ * <p>
+ * In the previous sample you see the use of attribute {@code tools:ignore="MissingPrefix"}.
+ * This is because sometimes the you will get a warning from lint that you are applying an
+ * attribute with an invalid namespace. In this cases the ignore MissingPrefix will hide this
+ * warnings.
+ * </p>
+ * <p>
+ * Also you can use the {@code customTypeface} attribute in your styles, themes and
+ * textAppearances as well. You can find some examples of this in the {@code Samples} project.
+ * </p>
+ * <p>
+ * <strong>Custom views extending {@code TextView}</strong>
+ * </p>
+ * <p>
+ * If you have a custom view with a default style defined in theme, then you must register
+ * this theme attribute int {@code CustomTypeface}. To do that you can use the method
+ * {@link #registerDefaultAttrStyle}. This is because {@code CustomTypeface} doesn't have
+ * a way to know what is a default style of a view, and this is why must be registered before.
+ * Here is a sample code to register a custom view default style attribute.
+ * </p>
+ * <pre><code>
+ *     CustomTypeface.getInstance().registerDefaultAttrStyle(
+ *         CustomTextView.class, R.attr.customTextViewStyle);
+ * </code></pre>
  */
 public class CustomTypeface {
 
@@ -34,19 +139,16 @@ public class CustomTypeface {
         return SingletonHolder.instance;
     }
 
-    public void applyTypeface(View view, AttributeSet attrs) {
-        if (!(view instanceof TextView) || view.getContext() == null) {
-            return;
-        }
-        TextView textView = (TextView) view;
-        Resources.Theme theme = view.getContext().getTheme();
-
-        List<Integer> defStyleAttrs = getHierarchyDefStyleAttrs(textView.getClass());
-        for (Integer defStyleAttr : defStyleAttrs) {
-            boolean applied = applyTypeface(textView, defStyleAttr, attrs, theme);
-            if (applied) {
-                break;
-            }
+    public static void registerDefaultAttrStyles(CustomTypeface instance) {
+        instance.registerDefaultAttrStyle(TextView.class, android.R.attr.textViewStyle);
+        instance.registerDefaultAttrStyle(EditText.class, android.R.attr.editTextStyle);
+        instance.registerDefaultAttrStyle(Button.class, android.R.attr.buttonStyle);
+        instance.registerDefaultAttrStyle(AutoCompleteTextView.class, android.R.attr.autoCompleteTextViewStyle);
+        instance.registerDefaultAttrStyle(CheckBox.class, android.R.attr.checkboxStyle);
+        instance.registerDefaultAttrStyle(RadioButton.class, android.R.attr.radioButtonStyle);
+        instance.registerDefaultAttrStyle(ToggleButton.class, android.R.attr.buttonStyleToggle);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            instance.registerDefaultAttrStyle(CheckedTextView.class, android.R.attr.checkedTextViewStyle);
         }
     }
 
@@ -62,6 +164,11 @@ public class CustomTypeface {
         mTypefaces.put(typefaceName, typeface);
     }
 
+    public void registerTypeface(String typefaceName, AssetManager assets, String filePath) {
+        Typeface typeface = Typeface.createFromAsset(assets, filePath);
+        mTypefaces.put(typefaceName, typeface);
+    }
+
     public View createView(String name, Context context, AttributeSet attrs) {
         try {
             LayoutInflater inflater = LayoutInflater.from(context);
@@ -74,6 +181,22 @@ public class CustomTypeface {
             return view;
         } catch (ClassNotFoundException e) {
             return null;
+        }
+    }
+
+    public void applyTypeface(View view, AttributeSet attrs) {
+        if (!(view instanceof TextView) || view.getContext() == null) {
+            return;
+        }
+        TextView textView = (TextView) view;
+        Resources.Theme theme = view.getContext().getTheme();
+
+        List<Integer> defStyleAttrs = getHierarchyDefStyleAttrs(textView.getClass());
+        for (Integer defStyleAttr : defStyleAttrs) {
+            boolean applied = applyTypeface(textView, defStyleAttr, attrs, theme);
+            if (applied) {
+                break;
+            }
         }
     }
 
@@ -138,16 +261,7 @@ public class CustomTypeface {
         public static final CustomTypeface instance = new CustomTypeface();
 
         static {
-            instance.registerDefaultAttrStyle(TextView.class, android.R.attr.textViewStyle);
-            instance.registerDefaultAttrStyle(EditText.class, android.R.attr.editTextStyle);
-            instance.registerDefaultAttrStyle(Button.class, android.R.attr.buttonStyle);
-            instance.registerDefaultAttrStyle(AutoCompleteTextView.class, android.R.attr.autoCompleteTextViewStyle);
-            instance.registerDefaultAttrStyle(CheckBox.class, android.R.attr.checkboxStyle);
-            instance.registerDefaultAttrStyle(RadioButton.class, android.R.attr.radioButtonStyle);
-            instance.registerDefaultAttrStyle(ToggleButton.class, android.R.attr.buttonStyleToggle);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                instance.registerDefaultAttrStyle(CheckedTextView.class, android.R.attr.checkedTextViewStyle);
-            }
+            registerDefaultAttrStyles(instance);
         }
     }
 }

@@ -20,6 +20,7 @@ public class MainActivity extends Activity {
 
     @Override
     public View onCreateView(String name, Context context, AttributeSet attrs) {
+        // Delegate the view create to CustomTypeface
         return CustomTypeface.getInstance().createView(name, context, attrs);
     }
 

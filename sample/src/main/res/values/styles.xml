@@ -6,10 +6,14 @@
     </style>
 
     <style name="TextView" parent="android:Widget.TextView">
+        <!-- All the TextView and derived views will have the defined customTypeface -->
         <item name="customTypeface">@string/typeface_audiowide</item>
     </style>
 
     <style name="Button" parent="android:Widget.Button">
+        <!-- Prevents to apply the customTypeface defined in a parent style, or in a
+        parent view. In this case is preventing to apply by default the customTypeface
+        defined in TextView widget -->
         <item name="customTypefaceIgnoreParents">true</item>
     </style>
 
