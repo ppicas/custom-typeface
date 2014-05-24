@@ -28,3 +28,6 @@ proguard/
 # AndroidStudio
 .idea/
 *.iml
+
+# OSX
+.DS_Store
