@@ -1,14 +1,15 @@
 apply plugin: 'android-library'
+apply plugin: 'maven'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "19.1"
+    compileSdkVersion project.compileSdkVersion
+    buildToolsVersion project.buildToolsVersion
 
     defaultConfig {
         minSdkVersion 1
         targetSdkVersion 19
-        versionCode 1
-        versionName "1.0"
+        versionCode project.versionCode
+        versionName version
     }
     buildTypes {
         release {
@@ -22,6 +23,27 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
-task javadoc(type: Javadoc) {
+task generateJavadoc(type: Javadoc) {
     source android.sourceSets.main.allJava
+}
+
+task generateJavadocJar(type: Jar, dependsOn: generateJavadoc) {
+    classifier 'javadoc'
+    from generateJavadoc.destinationDir
+}
+
+task generateSourceJar(type: Jar) {
+    classifier 'src'
+    from android.sourceSets.main.allSource
+}
+
+artifacts {
+    archives generateSourceJar
+    archives generateJavadocJar
+}
+
+task installLocal(type: Upload) {
+    repositories.mavenInstaller {
+        configuration = configurations.archives
+    }
 }
