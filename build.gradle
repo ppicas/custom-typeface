@@ -10,13 +10,13 @@ buildscript {
 }
 
 allprojects {
-    version = '1.0.0'
-    group = 'cat.picas.customtypeface'
-
     repositories {
         mavenCentral()
     }
 }
+
+version = '1.0.0'
+group = 'cat.picas.customtypeface'
 
 ext {
     versionCode = 1

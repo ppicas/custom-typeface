@@ -8,7 +8,7 @@ android {
         minSdkVersion 8
         targetSdkVersion 19
         versionCode project.versionCode
-        versionName version
+        versionName project.version
     }
     buildTypes {
         release {
