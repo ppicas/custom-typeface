@@ -3,10 +3,11 @@
     <style name="AppTheme" parent="android:Theme.Light">
         <item name="android:textViewStyle">@style/TextView</item>
         <item name="android:buttonStyle">@style/Button</item>
+        <item name="allCapsTextViewStyle">@style/AllCapsTextView</item>
     </style>
 
     <style name="TextView" parent="android:Widget.TextView">
-        <!-- All the TextView and derived views will have the defined customTypeface -->
+        <!-- All the TextView and derived views will use Audiowide typeface -->
         <item name="customTypeface">@string/typeface_audiowide</item>
     </style>
 
@@ -15,6 +16,11 @@
         parent view. In this case is preventing to apply by default the customTypeface
         defined in TextView widget -->
         <item name="customTypefaceIgnoreParents">true</item>
+    </style>
+
+    <style name="AllCapsTextView" parent="TextView">
+        <!-- All the AllCapsTextView will use Permanent Marker typeface -->
+        <item name="customTypeface">@string/typeface_permanent_marker</item>
     </style>
 
 </resources>

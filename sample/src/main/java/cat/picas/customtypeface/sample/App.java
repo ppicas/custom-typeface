@@ -19,5 +19,12 @@ public class App extends Application {
         // Also you can directly use this shortcut to let CustomTypeface to create the
         // Typeface object for you.
         CustomTypeface.getInstance().registerTypeface("audiowide", getAssets(), "audiowide.ttf");
+
+        // Register the theme attribute that reference the default style to be used with
+        // AllCapsTextView widget. This is necessary because AllCapsTextView is a custom
+        // widget defined in our project. But this also can be used if you want to style
+        // any widget providing from any third party library.
+        CustomTypeface.getInstance().registerAttributeForDefaultStyle(AllCapsTextView.class,
+                R.attr.allCapsTextViewStyle);
     }
 }

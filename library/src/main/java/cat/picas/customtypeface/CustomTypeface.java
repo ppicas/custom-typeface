@@ -121,12 +121,12 @@ import java.util.Map;
  * <p>
  * If you have a custom view with a default style defined in theme, then you must register
  * this theme attribute int {@code CustomTypeface}. To do that you can use the method
- * {@link #registerAttributeOfDefaultStyle}. This is because {@code CustomTypeface} doesn't have
+ * {@link #registerAttributeForDefaultStyle}. This is because {@code CustomTypeface} doesn't have
  * a way to know what is a default style of a view, and this is why must be registered before.
  * Here is a sample code to register a custom view default style attribute.
  * </p>
  * <pre><code>
- *     CustomTypeface.getInstance().registerAttributeOfDefaultStyle(
+ *     CustomTypeface.getInstance().registerAttributeForDefaultStyle(
  *         CustomTextView.class, R.attr.customTextViewStyle);
  * </code></pre>
  */
@@ -145,21 +145,22 @@ public class CustomTypeface {
      * instance of {@code CustomTypeface}, and you want to configure with the default
      * styles for the default android widgets.
      *
-     * @see #registerAttributeOfDefaultStyle(Class, int)
+     * @see #registerAttributeForDefaultStyle(Class, int)
      * @param instance an instance of {@code CustomTypeface} to register the attributes
      */
-    public static void registerAttributesOfDefaultStyles(CustomTypeface instance) {
-        instance.registerAttributeOfDefaultStyle(TextView.class, android.R.attr.textViewStyle);
-        instance.registerAttributeOfDefaultStyle(EditText.class, android.R.attr.editTextStyle);
-        instance.registerAttributeOfDefaultStyle(Button.class, android.R.attr.buttonStyle);
-        instance.registerAttributeOfDefaultStyle(AutoCompleteTextView.class,
+    public static void registerAttributesForDefaultStyles(CustomTypeface instance) {
+        instance.registerAttributeForDefaultStyle(TextView.class, android.R.attr.textViewStyle);
+        instance.registerAttributeForDefaultStyle(EditText.class, android.R.attr.editTextStyle);
+        instance.registerAttributeForDefaultStyle(Button.class, android.R.attr.buttonStyle);
+        instance.registerAttributeForDefaultStyle(AutoCompleteTextView.class,
                 android.R.attr.autoCompleteTextViewStyle);
-        instance.registerAttributeOfDefaultStyle(CheckBox.class, android.R.attr.checkboxStyle);
-        instance.registerAttributeOfDefaultStyle(RadioButton.class, android.R.attr.radioButtonStyle);
-        instance.registerAttributeOfDefaultStyle(ToggleButton.class,
+        instance.registerAttributeForDefaultStyle(CheckBox.class, android.R.attr.checkboxStyle);
+        instance.registerAttributeForDefaultStyle(RadioButton.class,
+                android.R.attr.radioButtonStyle);
+        instance.registerAttributeForDefaultStyle(ToggleButton.class,
                 android.R.attr.buttonStyleToggle);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            instance.registerAttributeOfDefaultStyle(CheckedTextView.class,
+            instance.registerAttributeForDefaultStyle(CheckedTextView.class,
                     android.R.attr.checkedTextViewStyle);
         }
     }
@@ -174,7 +175,8 @@ public class CustomTypeface {
      * @param clazz          a {@code Class} of a view extending {@code TextView}
      * @param themeAttribute an integer with the number of the theme attribute
      */
-    public void registerAttributeOfDefaultStyle(Class<? extends TextView> clazz, int themeAttribute) {
+    public void registerAttributeForDefaultStyle(Class<? extends TextView> clazz,
+            int themeAttribute) {
         mDefStyleAttrs.put(clazz, themeAttribute);
     }
 
@@ -307,7 +309,7 @@ public class CustomTypeface {
         public static final CustomTypeface instance = new CustomTypeface();
 
         static {
-            registerAttributesOfDefaultStyles(instance);
+            registerAttributesForDefaultStyles(instance);
         }
     }
 }
