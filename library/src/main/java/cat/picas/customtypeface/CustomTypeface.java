@@ -24,15 +24,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static android.view.LayoutInflater.Factory;
+import static android.view.LayoutInflater.Factory2;
+
 /**
  * This class can be used to automatically apply custom {@link Typeface} to views inflated from
  * any XML.
+ *
  * <p>
- * This class is intended to be used from a {@link LayoutInflater.Factory#onCreateView} method,
- * or from {@link LayoutInflater.Factory2#onCreateView}. From one of this methods
+ * This class is intended to be used from a {@link Factory#onCreateView} method,
+ * or from {@link Factory2#onCreateView}. From one of this methods
  * just call to {@link #createView} and it will take care to delegate the view creation to the
  * system {@link LayoutInflater}, and after the creation try to apply a custom {@code Typeface}
  * if the new created view is an instance of {@link TextView}, or any other derived class.
+ * </p>
+ *
  * <p>
  * Here is an example of the use of this class. First you should register the {@code Typeface}
  * that you will use from the XML layouts. A good place to do this is in the {@code Application}
@@ -55,6 +61,7 @@ import java.util.Map;
  *     }
  * }
  * </code></pre>
+ *
  * <p>
  * The next step is override the {@link Activity#onCreateView} method and delegate the view
  * creation to {@code CustomTypeface}.
@@ -79,6 +86,7 @@ import java.util.Map;
  *
  * }
  * </code></pre>
+ *
  * <p>
  * Now all the templates inflated in the context of this {@code Activity} will apply a
  * custom {@code Typeface} if it's defined in the XML. Check following the layout file.
@@ -105,19 +113,23 @@ import java.util.Map;
  *
  * </LinearLayout>
  * }</pre>
+ *
  * <p>
  * In the previous sample you see the use of attribute {@code tools:ignore="MissingPrefix"}.
  * This is because sometimes the you will get a warning from lint that you are applying an
  * attribute with an invalid namespace. In this cases the ignore MissingPrefix will hide this
  * warnings.
  * </p>
+ *
  * <p>
  * Also you can use the {@code customTypeface} attribute in your styles, themes and
  * textAppearances as well. You can find some examples of this in the {@code Samples} project.
  * </p>
+ *
  * <p>
  * <strong>Custom views extending {@code TextView}</strong>
  * </p>
+ *
  * <p>
  * If you have a custom view with a default style defined in theme, then you must register
  * this theme attribute int {@code CustomTypeface}. To do that you can use the method
@@ -145,8 +157,8 @@ public class CustomTypeface {
      * instance of {@code CustomTypeface}, and you want to configure with the default
      * styles for the default android widgets.
      *
-     * @see #registerAttributeForDefaultStyle(Class, int)
      * @param instance an instance of {@code CustomTypeface} to register the attributes
+     * @see #registerAttributeForDefaultStyle(Class, int)
      */
     public static void registerAttributesForDefaultStyles(CustomTypeface instance) {
         instance.registerAttributeForDefaultStyle(TextView.class, android.R.attr.textViewStyle);
@@ -203,13 +215,14 @@ public class CustomTypeface {
     }
 
     /**
-     * This is a shortcut to let {@code CustomTypeface} create directly a {@link Typeface} from a
-     * file located in the assets directory. For more information see the {@link
-     * #registerTypeface(String, Typeface)} method.
+     * This is a shortcut to let {@code CustomTypeface} create directly a {@link Typeface}
+     * for you. This will create the Typeface from a file located in the assets directory.
+     * For more information see the {@link #registerTypeface(String, Typeface)} method.
      *
      * @param typefaceName a name that will identify this {@code Typeface}
      * @param assets       a instance of {@link AssetManager}
      * @param filePath     a path to a TTF file located inside the assets folder
+     *
      * @see #registerTypeface(String, Typeface)
      */
     public void registerTypeface(String typefaceName, AssetManager assets, String filePath) {
@@ -217,6 +230,28 @@ public class CustomTypeface {
         mTypefaces.put(typefaceName, typeface);
     }
 
+    /**
+     * Inflate the {@link View} for the specified tag name and apply custom {@link Typeface} if
+     * is required. This method first will delegate the {@code View} creation to
+     * {@link LayoutInflater} and then call {@link #applyTypeface(View, AttributeSet)} on
+     * the created view.
+     *
+     * <p>
+     * This method can be used to delegate the implementation of {@link Factory#onCreateView}
+     * or {@link Factory2#onCreateView}. The most common usage of this method is to call it
+     * from {@link Activity#onCreateView(String, Context, AttributeSet)}.
+     * </p>
+     *
+     * @param name    Tag name to be inflated.
+     * @param context The context the view is being created in.
+     * @param attrs   Inflation attributes as specified in XML file.
+     *
+     * @return Newly created view.
+     *
+     * @see Factory
+     * @see Factory2
+     * @see #applyTypeface(View, AttributeSet)
+     */
     public View createView(String name, Context context, AttributeSet attrs) {
         try {
             LayoutInflater inflater = LayoutInflater.from(context);
@@ -232,6 +267,34 @@ public class CustomTypeface {
         }
     }
 
+    /**
+     * Apply a custom {@literal Typeface} if it has a {@code customTypeface} attribute.
+     * This method will search for a {@code customTypeface} attribute looking in the following
+     * places:
+     *
+     * <ul>
+     * <li>Attributes of the tag defined in the layout</li>
+     * <li>Attributes of the style applied to the tag</li>
+     * <li>Attributes of the default style defined in the theme</li>
+     * <li>Attributes of textAppearance found in any of previous places</li>
+     * </ul>
+     *
+     * <p>
+     * If after search in the previous places it has not found a {@code customTypeface}, will
+     * over iterate all the parent classes searching in the default styles until a
+     * {@code customTypeface} is found.
+     * </p>
+     *
+     * <p>
+     * This method will also look for the {@code customTypefaceIgnoreParents} attribute
+     * in the same places as the {@code customTypeface} attribute. If this boolean attribute is
+     * found and it's set to true, it will ignore any {@code customTypeface} defined in the parent
+     * classes.
+     * </p>
+     *
+     * @param view  the {@code View} to apply the typefaces
+     * @param attrs attributes object extracted in the layout inflation
+     */
     public void applyTypeface(View view, AttributeSet attrs) {
         if (!(view instanceof TextView) || view.getContext() == null) {
             return;
