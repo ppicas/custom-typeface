@@ -121,12 +121,12 @@ import java.util.Map;
  * <p>
  * If you have a custom view with a default style defined in theme, then you must register
  * this theme attribute int {@code CustomTypeface}. To do that you can use the method
- * {@link #registerDefaultAttrStyle}. This is because {@code CustomTypeface} doesn't have
+ * {@link #registerAttributeOfDefaultStyle}. This is because {@code CustomTypeface} doesn't have
  * a way to know what is a default style of a view, and this is why must be registered before.
  * Here is a sample code to register a custom view default style attribute.
  * </p>
  * <pre><code>
- *     CustomTypeface.getInstance().registerDefaultAttrStyle(
+ *     CustomTypeface.getInstance().registerAttributeOfDefaultStyle(
  *         CustomTextView.class, R.attr.customTextViewStyle);
  * </code></pre>
  */
@@ -139,31 +139,77 @@ public class CustomTypeface {
         return SingletonHolder.instance;
     }
 
-    public static void registerDefaultAttrStyles(CustomTypeface instance) {
-        instance.registerDefaultAttrStyle(TextView.class, android.R.attr.textViewStyle);
-        instance.registerDefaultAttrStyle(EditText.class, android.R.attr.editTextStyle);
-        instance.registerDefaultAttrStyle(Button.class, android.R.attr.buttonStyle);
-        instance.registerDefaultAttrStyle(AutoCompleteTextView.class, android.R.attr.autoCompleteTextViewStyle);
-        instance.registerDefaultAttrStyle(CheckBox.class, android.R.attr.checkboxStyle);
-        instance.registerDefaultAttrStyle(RadioButton.class, android.R.attr.radioButtonStyle);
-        instance.registerDefaultAttrStyle(ToggleButton.class, android.R.attr.buttonStyleToggle);
+    /**
+     * Register the theme attributes with the default style for all the views extending
+     * {@link TextView} defined in the SDK. You can use this method if you create an
+     * instance of {@code CustomTypeface}, and you want to configure with the default
+     * styles for the default android widgets.
+     *
+     * @see #registerAttributeOfDefaultStyle(Class, int)
+     * @param instance an instance of {@code CustomTypeface} to register the attributes
+     */
+    public static void registerAttributesOfDefaultStyles(CustomTypeface instance) {
+        instance.registerAttributeOfDefaultStyle(TextView.class, android.R.attr.textViewStyle);
+        instance.registerAttributeOfDefaultStyle(EditText.class, android.R.attr.editTextStyle);
+        instance.registerAttributeOfDefaultStyle(Button.class, android.R.attr.buttonStyle);
+        instance.registerAttributeOfDefaultStyle(AutoCompleteTextView.class,
+                android.R.attr.autoCompleteTextViewStyle);
+        instance.registerAttributeOfDefaultStyle(CheckBox.class, android.R.attr.checkboxStyle);
+        instance.registerAttributeOfDefaultStyle(RadioButton.class, android.R.attr.radioButtonStyle);
+        instance.registerAttributeOfDefaultStyle(ToggleButton.class,
+                android.R.attr.buttonStyleToggle);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            instance.registerDefaultAttrStyle(CheckedTextView.class, android.R.attr.checkedTextViewStyle);
+            instance.registerAttributeOfDefaultStyle(CheckedTextView.class,
+                    android.R.attr.checkedTextViewStyle);
         }
     }
 
-    public void registerDefaultAttrStyle(Class<? extends TextView> clazz, int defAttrStyle) {
-        mDefStyleAttrs.put(clazz, defAttrStyle);
+    /**
+     * Register the theme attribute that reference the default style to be used by a view.
+     * This attribute will be used in the cases where you define a view in a layout XML,
+     * and you don't define a {@code customTypeface} or {@code style} specifying a
+     * {@code customTypeface}. In this cases {@code CustomTypeface} will try to apply
+     * the {@code customTypeface} found in the default style of that view.
+     *
+     * @param clazz          a {@code Class} of a view extending {@code TextView}
+     * @param themeAttribute an integer with the number of the theme attribute
+     */
+    public void registerAttributeOfDefaultStyle(Class<? extends TextView> clazz, int themeAttribute) {
+        mDefStyleAttrs.put(clazz, themeAttribute);
     }
 
+    /**
+     * Returns the {@link Typeface} that was registered with the specified name.
+     *
+     * @param typefaceName a {@code String} with the name of the registered {@code TypeFace}
+     * @return a {@link Typeface} or null if not found
+     */
     public Typeface getTypeface(String typefaceName) {
         return mTypefaces.get(typefaceName);
     }
 
+    /**
+     * Register a {@link Typeface} with the specified name. This name will be able to be referenced
+     * using a {@code customTypeface} attribute in the layout files, in order to apply the
+     * registered {@code Typeface} to a a view.
+     *
+     * @param typefaceName a name that will identify this {@code Typeface}
+     * @param typeface     a {@link Typeface} instance to register
+     */
     public void registerTypeface(String typefaceName, Typeface typeface) {
         mTypefaces.put(typefaceName, typeface);
     }
 
+    /**
+     * This is a shortcut to let {@code CustomTypeface} create directly a {@link Typeface} from a
+     * file located in the assets directory. For more information see the {@link
+     * #registerTypeface(String, Typeface)} method.
+     *
+     * @param typefaceName a name that will identify this {@code Typeface}
+     * @param assets       a instance of {@link AssetManager}
+     * @param filePath     a path to a TTF file located inside the assets folder
+     * @see #registerTypeface(String, Typeface)
+     */
     public void registerTypeface(String typefaceName, AssetManager assets, String filePath) {
         Typeface typeface = Typeface.createFromAsset(assets, filePath);
         mTypefaces.put(typefaceName, typeface);
@@ -261,7 +307,7 @@ public class CustomTypeface {
         public static final CustomTypeface instance = new CustomTypeface();
 
         static {
-            registerDefaultAttrStyles(instance);
+            registerAttributesOfDefaultStyles(instance);
         }
     }
 }

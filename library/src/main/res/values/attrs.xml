@@ -2,7 +2,15 @@
 <resources>
 
     <declare-styleable name="CustomTypeface">
+            <!-- A string with the name of the registered Typeface to apply to this view.
+                 Type Typeface are registered using CustomTypeface.registerTypeface()
+                 method -->
             <attr name="customTypeface" format="string"/>
+
+            <!-- If is set to true, the defined customTypeface attributes in parents
+                 will be ignored. In this way you will be able to disable apply
+                 a custom Typeface. When is set to false if any parent defines a
+                 customTypeface, this will be applied. -->
             <attr name="customTypefaceIgnoreParents" format="boolean"/>
     </declare-styleable>
 
