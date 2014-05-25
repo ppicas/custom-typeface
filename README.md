@@ -88,7 +88,7 @@ attribute with an invalid namespace. In this cases the ignore MissingPrefix will
 warnings.
 
 Also you can use the `customTypeface` attribute in your styles, themes and
-textAppearances as well. You can find some examples of this in the *sample* project.
+textAppearances as well. You can find some examples of this in the **sample** project.
 
 ### Custom views extending `TextView`
 
