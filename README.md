@@ -56,8 +56,8 @@ public class MainActivity extends Activity {
 }
 ```
 
-Now all the templates inflated in the context of this {@code Activity} will apply a
-custom {@code Typeface} if it's defined in the XML. Check following the layout file.
+Now all the templates inflated in the context of this `Activity` will apply a
+custom `Typeface` if it's defined in the XML. Check following the layout file.
 
 ```xml
 <LinearLayout
@@ -87,8 +87,8 @@ This is because sometimes the you will get a warning from lint that you are appl
 attribute with an invalid namespace. In this cases the ignore MissingPrefix will hide this
 warnings.
 
-Also you can use the {@code customTypeface} attribute in your styles, themes and
-textAppearances as well. You can find some examples of this in the {@code Samples} project.
+Also you can use the `customTypeface` attribute in your styles, themes and
+textAppearances as well. You can find some examples of this in the *sample* project.
 
 ### Custom views extending `TextView`
 
