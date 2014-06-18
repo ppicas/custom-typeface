@@ -24,7 +24,7 @@ dependencies {
 }
 
 task generateJavadoc(type: Javadoc) {
-    source android.sourceSets.main.allJava
+    source android.sourceSets.main.java
 }
 
 task generateJavadocJar(type: Jar, dependsOn: generateJavadoc) {
@@ -34,7 +34,7 @@ task generateJavadocJar(type: Jar, dependsOn: generateJavadoc) {
 
 task generateSourceJar(type: Jar) {
     classifier 'src'
-    from android.sourceSets.main.allSource
+    from android.sourceSets.main.java
 }
 
 artifacts {

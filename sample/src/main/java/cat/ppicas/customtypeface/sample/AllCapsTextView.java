@@ -14,7 +14,7 @@
  * the License.
  */
 
-package cat.picas.customtypeface.sample;
+package cat.ppicas.customtypeface.sample;
 
 import android.content.Context;
 import android.graphics.Rect;

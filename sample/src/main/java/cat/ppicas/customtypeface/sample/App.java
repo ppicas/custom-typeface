@@ -14,12 +14,12 @@
  * the License.
  */
 
-package cat.picas.customtypeface.sample;
+package cat.ppicas.customtypeface.sample;
 
 import android.app.Application;
 import android.graphics.Typeface;
 
-import cat.picas.customtypeface.CustomTypeface;
+import cat.ppicas.customtypeface.CustomTypeface;
 
 public class App extends Application {
 

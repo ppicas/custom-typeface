@@ -14,6 +14,6 @@
     the License.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="cat.picas.customtypeface">
+          package="cat.ppicas.customtypeface">
     <application />
 </manifest>

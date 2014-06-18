@@ -14,7 +14,7 @@
  * the License.
  */
 
-package cat.picas.customtypeface.sample;
+package cat.ppicas.customtypeface.sample;
 
 import android.app.Activity;
 import android.content.Context;
@@ -22,7 +22,7 @@ import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
 
-import cat.picas.customtypeface.CustomTypeface;
+import cat.ppicas.customtypeface.CustomTypeface;
 
 public class MainActivity extends Activity {
 
