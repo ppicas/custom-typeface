@@ -1,4 +1,4 @@
-custom-typeface
+Custom Typeface
 ===============
 
 Android library to apply custom typefaces directly from layouts, styles or themes.
