@@ -1,7 +1,7 @@
 custom-typeface
 ===============
 
-This library enables to apply custom typefaces with ease directly from Android layout XML files.
+Android library to apply custom typefaces directly from layouts, styles or themes.
 
 Install
 -------
