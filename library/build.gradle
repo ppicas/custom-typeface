@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
+apply plugin: 'signing'
 
 android {
     compileSdkVersion project.compileSdkVersion
@@ -24,26 +25,80 @@ dependencies {
 }
 
 task generateJavadoc(type: Javadoc) {
-    source android.sourceSets.main.java
+    source = android.sourceSets.main.java.source
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    options.links("http://docs.oracle.com/javase/7/docs/api/");
+    options.linksOffline("http://developer.android.com/reference",
+            "${android.sdkDirectory}/docs/reference");
 }
 
 task generateJavadocJar(type: Jar, dependsOn: generateJavadoc) {
-    classifier 'javadoc'
+    classifier = 'javadoc'
     from generateJavadoc.destinationDir
 }
 
 task generateSourceJar(type: Jar) {
-    classifier 'src'
-    from android.sourceSets.main.java
+    classifier = 'sources'
+    from android.sourceSets.main.java.source
 }
 
 artifacts {
-    archives generateSourceJar
     archives generateJavadocJar
+    archives generateSourceJar
+}
+
+signing {
+    required { gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
 }
 
 task installLocal(type: Upload) {
     repositories.mavenInstaller {
         configuration = configurations.archives
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'CustomTypeface'
+                packaging 'aar'
+                // optionally artifactId can be defined here
+                description 'Android library to apply custom typefaces directly from layouts, ' +
+                        'styles or themes.'
+                url 'https://github.com/ppicas/custom-typeface'
+
+                scm {
+                    connection 'scm:git:git@github.com:ppicas/custom-typeface.git'
+                    developerConnection 'scm:git:git@github.com:ppicas/custom-typeface.git'
+                    url 'https://github.com/ppicas/custom-typeface'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        name 'Pau Picas Sans'
+                        email 'pau.picas@gmail.com'
+                    }
+                }
+            }
+        }
     }
 }
