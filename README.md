@@ -6,7 +6,13 @@ Android library to apply custom typefaces directly from layouts, styles or theme
 Install
 -------
 
-TODO...
+Open `build.gradle` file and include the following dependency:
+
+```
+dependencies {
+    compile 'cat.ppicas.customtypeface:library:1.0.0'
+}
+```
 
 Usage
 -----
