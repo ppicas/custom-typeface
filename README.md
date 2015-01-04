@@ -92,7 +92,7 @@ custom `Typeface` if it's defined in the XML. Check the following layout file.
 
 In the previous sample you can see the use of attribute `tools:ignore="MissingPrefix"`.
 This is because sometimes the you will get a warning from lint that you are applying an
-attribute with an invalid namespace. In this cases the ignore `MissingPrefix` will hide this
+attribute with an invalid namespace. In this cases the ignore MissingPrefix will hide this
 warnings.
 
 Also you can use the `customTypeface` attribute in your styles, themes and
