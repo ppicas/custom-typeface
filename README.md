@@ -38,8 +38,11 @@ public class App extends Application {
 }
 ```
 
-The next step is override the `Activity.onCreateView()` method and delegate the view creation to
-`CustomTypeface`.
+The next step is set `CustomTypeface` as the `Factory` for `LayoutInflater` on each `Activity`.
+It's important to call `setFactory` *before* calling `setContentView`, otherwise the views
+will be inflated without applying any custom typeface. For you convenience you can create a
+base `Activity` class that overrides `onCreate` and calls `setFactory`. This will enable you
+to extend this class and avoid copy-paste the same line on every `Activity`.
 
 ```java
 public class MainActivity extends Activity {
@@ -49,12 +52,11 @@ public class MainActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
-  }
 
-  @Override
-  public View onCreateView(String name, Context context, AttributeSet attrs) {
-    return CustomTypeface.getInstance().createView(name, context, attrs);
+    // Set CustomTypeface as LayoutInflater.Factory before call setContentView()
+    getLayoutInflater().setFactory(CustomTypeface.getInstance());
+
+    setContentView(R.layout.activity_main);
   }
 
   // ...
@@ -63,7 +65,7 @@ public class MainActivity extends Activity {
 ```
 
 Now all the templates inflated in the context of this `Activity` will apply a
-custom `Typeface` if it's defined in the XML. Check following the layout file.
+custom `Typeface` if it's defined in the XML. Check the following layout file.
 
 ```xml
 <LinearLayout
@@ -88,9 +90,9 @@ custom `Typeface` if it's defined in the XML. Check following the layout file.
 </LinearLayout>
 ```
 
-In the previous sample you see the use of attribute `tools:ignore="MissingPrefix"`.
+In the previous sample you can see the use of attribute `tools:ignore="MissingPrefix"`.
 This is because sometimes the you will get a warning from lint that you are applying an
-attribute with an invalid namespace. In this cases the ignore MissingPrefix will hide this
+attribute with an invalid namespace. In this cases the ignore `MissingPrefix` will hide this
 warnings.
 
 Also you can use the `customTypeface` attribute in your styles, themes and

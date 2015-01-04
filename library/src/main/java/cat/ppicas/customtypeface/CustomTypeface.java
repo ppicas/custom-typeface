@@ -159,7 +159,7 @@ import static android.view.LayoutInflater.Factory2;
  *         CustomTextView.class, R.attr.customTextViewStyle);
  * </code></pre>
  */
-public class CustomTypeface {
+public class CustomTypeface implements Factory {
 
     private Map<Class<?>, Integer> mDefStyleAttrs = new HashMap<Class<?>, Integer>();
     private Map<String, Typeface> mTypefaces = new HashMap<String, Typeface>();
@@ -255,8 +255,7 @@ public class CustomTypeface {
      *
      * <p>
      * This method can be used to delegate the implementation of {@link Factory#onCreateView}
-     * or {@link Factory2#onCreateView}. The most common usage of this method is to call it
-     * from {@link Activity#onCreateView(String, Context, AttributeSet)}.
+     * or {@link Factory2#onCreateView}.
      * </p>
      *
      * @param name    Tag name to be inflated.
@@ -282,6 +281,23 @@ public class CustomTypeface {
         } catch (ClassNotFoundException e) {
             return null;
         }
+    }
+
+    /**
+     * Implements {@link Factory} interface.
+     *
+     * @param name    Tag name to be inflated.
+     * @param context The context the view is being created in.
+     * @param attrs   Inflation attributes as specified in XML file.
+     *
+     * @return View Newly created view. Return null for the default
+     * behavior.
+     *
+     * @see Factory
+     */
+    @Override
+    public View onCreateView(String name, Context context, AttributeSet attrs) {
+        return createView(name, context, attrs);
     }
 
     /**
