@@ -48,11 +48,14 @@ import static android.view.LayoutInflater.Factory2;
  * any XML.
  *
  * <p>
- * This class is intended to be used from a {@link Factory#onCreateView} method,
- * or from {@link Factory2#onCreateView}. From one of this methods
- * just call to {@link #createView} and it will take care to delegate the view creation to the
- * system {@link LayoutInflater}, and after the creation try to apply a custom {@code Typeface}
- * if the new created view is an instance of {@link TextView}, or any other derived class.
+ * This class is intended to be used as {@link LayoutInflater.Factory} implementation.
+ * </p>
+ * <p>
+ * Alternatively this class can also be be used from a {@link Factory#onCreateView} method,
+ * or from {@link Factory2#onCreateView}. From one of this methods just call to {@link #createView}
+ * and it will take care to delegate the view creation to the system {@link LayoutInflater},
+ * and after the creation try to apply a custom {@code Typeface} if the new created view is an
+ * instance of {@link TextView}, or any other derived class.
  * </p>
  *
  * <p>
@@ -79,8 +82,13 @@ import static android.view.LayoutInflater.Factory2;
  * </code></pre>
  *
  * <p>
- * The next step is override the {@link Activity#onCreateView} method and delegate the view
- * creation to {@code CustomTypeface}.
+ * The next step is set {@link CustomTypeface} as the {@link Factory} for the {@link LayoutInflater}
+ * of each {@link Activity}. It's important to call {@link LayoutInflater#setFactory}
+ * <strong>before</strong> calling {@link Activity#setContentView}, otherwise the views will be
+ * inflated without applying any custom typeface. For you convenience you can create a base
+ * {@code Activity} class that overrides {@link Activity#onCreate} and calls {@code setFactory}.
+ * This will enable you to extend this class and avoid copy-paste the same line on
+ * each {@code Activity}.
  * </p>
  * <pre><code>
  * public class MainActivity extends Activity {
@@ -90,12 +98,11 @@ import static android.view.LayoutInflater.Factory2;
  *     {@literal @Override}
  *     protected void onCreate(Bundle savedInstanceState) {
  *         super.onCreate(savedInstanceState);
- *         setContentView(R.layout.activity_main);
- *     }
  *
- *     {@literal @Override}
- *     public View onCreateView(String name, Context context, AttributeSet attrs) {
- *         return CustomTypeface.getInstance().createView(name, context, attrs);
+ *         // Set CustomTypeface as LayoutInflater.Factory before call setContentView()
+ *         getLayoutInflater().setFactory(CustomTypeface.getInstance());
+ *
+ *         setContentView(R.layout.activity_main);
  *     }
  *
  *     // ...
@@ -105,7 +112,7 @@ import static android.view.LayoutInflater.Factory2;
  *
  * <p>
  * Now all the templates inflated in the context of this {@code Activity} will apply a
- * custom {@code Typeface} if it's defined in the XML. Check following the layout file.
+ * custom {@code Typeface} if it's defined in the XML. Check the following layout file.
  * </p>
  * <pre>{@code
  * <LinearLayout
@@ -132,7 +139,7 @@ import static android.view.LayoutInflater.Factory2;
  *
  * <p>
  * In the previous sample you see the use of attribute {@code tools:ignore="MissingPrefix"}.
- * This is because sometimes the you will get a warning from lint that you are applying an
+ * This is because sometimes you will get a warning from lint that you are applying an
  * attribute with an invalid namespace. In this cases the ignore MissingPrefix will hide this
  * warnings.
  * </p>
@@ -149,7 +156,7 @@ import static android.view.LayoutInflater.Factory2;
  *
  * <p>
  * If you have a custom view with a default style defined in theme, then you must register
- * this theme attribute int {@code CustomTypeface}. To do that you can use the method
+ * this theme attribute in {@code CustomTypeface}. To do that you can use the method
  * {@link #registerAttributeForDefaultStyle}. This is because {@code CustomTypeface} doesn't have
  * a way to know what is a default style of a view, and this is why must be registered before.
  * Here is a sample code to register a custom view default style attribute.
