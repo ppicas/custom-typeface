@@ -10,7 +10,7 @@ Open `build.gradle` file and include the following dependency:
 
 ```
 dependencies {
-    compile 'cat.ppicas.customtypeface:library:1.0.0'
+    compile 'cat.ppicas.customtypeface:library:1.0.1'
 }
 ```
 
