@@ -17,7 +17,6 @@
 package cat.ppicas.customtypeface;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -52,7 +51,7 @@ import static android.view.LayoutInflater.Factory2;
  * </p>
  * <p>
  * Alternatively this class can also be be used from a {@link Factory#onCreateView} method,
- * or from {@link Factory2#onCreateView}. From one of this methods just call to {@link #createView}
+ * or from {@link Factory2#onCreateView}. From one of this methods just call to {@code #createView}
  * and it will take care to delegate the view creation to the system {@link LayoutInflater},
  * and after the creation try to apply a custom {@code Typeface} if the new created view is an
  * instance of {@link TextView}, or any other derived class.
@@ -166,10 +165,10 @@ import static android.view.LayoutInflater.Factory2;
  *         CustomTextView.class, R.attr.customTextViewStyle);
  * </code></pre>
  */
-public class CustomTypeface implements Factory {
+public class CustomTypeface {
 
-    private Map<Class<?>, Integer> mDefStyleAttrs = new HashMap<Class<?>, Integer>();
-    private Map<String, Typeface> mTypefaces = new HashMap<String, Typeface>();
+    private final Map<Class<?>, Integer> mDefStyleAttrs = new HashMap<Class<?>, Integer>();
+    private final Map<String, Typeface> mTypefaces = new HashMap<String, Typeface>();
 
     public static CustomTypeface getInstance() {
         return SingletonHolder.instance;
@@ -252,59 +251,6 @@ public class CustomTypeface implements Factory {
     public void registerTypeface(String typefaceName, AssetManager assets, String filePath) {
         Typeface typeface = Typeface.createFromAsset(assets, filePath);
         mTypefaces.put(typefaceName, typeface);
-    }
-
-    /**
-     * Inflate the {@link View} for the specified tag name and apply custom {@link Typeface} if
-     * is required. This method first will delegate the {@code View} creation to
-     * {@link LayoutInflater} and then call {@link #applyTypeface(View, AttributeSet)} on
-     * the created view.
-     *
-     * <p>
-     * This method can be used to delegate the implementation of {@link Factory#onCreateView}
-     * or {@link Factory2#onCreateView}.
-     * </p>
-     *
-     * @param name    Tag name to be inflated.
-     * @param context The context the view is being created in.
-     * @param attrs   Inflation attributes as specified in XML file.
-     *
-     * @return Newly created view.
-     *
-     * @see Factory
-     * @see Factory2
-     * @see #applyTypeface(View, AttributeSet)
-     */
-    public View createView(String name, Context context, AttributeSet attrs) {
-        try {
-            LayoutInflater inflater = LayoutInflater.from(context);
-            String prefix = null;
-            if (name.indexOf('.') == -1) {
-                prefix = "android.widget.";
-            }
-            View view = inflater.createView(name, prefix, attrs);
-            applyTypeface(view, attrs);
-            return view;
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Implements {@link Factory} interface.
-     *
-     * @param name    Tag name to be inflated.
-     * @param context The context the view is being created in.
-     * @param attrs   Inflation attributes as specified in XML file.
-     *
-     * @return View Newly created view. Return null for the default
-     * behavior.
-     *
-     * @see Factory
-     */
-    @Override
-    public View onCreateView(String name, Context context, AttributeSet attrs) {
-        return createView(name, context, attrs);
     }
 
     /**

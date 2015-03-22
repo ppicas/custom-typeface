@@ -16,17 +16,54 @@
 
 package cat.ppicas.customtypeface.sample;
 
-import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.View;
 
 import cat.ppicas.customtypeface.CustomTypeface;
+import cat.ppicas.customtypeface.CustomTypefaceFactory;
+import cat.ppicas.customtypeface.CustomTypefaceSpan;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Configure the activity 'LayoutInflater' to use 'CustomTypefaceFactory' as
+        // 'LayoutInflater.Factory'. It's important to call this method before 'super.onCreate()',
+        // or you will not be able to set the factory because it could be already set by the
+        // parent 'onCreate'.
+        //
+        // 'CustomTypefaceFactory' accepts a 'LayoutInflater.Factory' as a third optional parameter.
+        // Please use this parameter if you want 'CustomTypefaceFactory' to first delegate the
+        // 'View' creation to an specific factory. In this case we are passing 'this' as third
+        // parameter because we want 'ActionBarActivity' from appcompat to do their own magic
+        // to support material design on old devices.
+        getLayoutInflater().setFactory(new CustomTypefaceFactory(
+                this, CustomTypeface.getInstance(), this));
+
         super.onCreate(savedInstanceState);
-        getLayoutInflater().setFactory(CustomTypeface.getInstance());
         setContentView(R.layout.activity_main);
+
+        // This is the only way to change the Typeface of a title on an ActionBar. This is
+        // because the TextViews created for the ActionBars are not inflated using LayoutInflater.
+        Typeface typeface = CustomTypeface.getInstance().getTypeface(
+                getString(R.string.typeface_audiowide));
+        setTitle(CustomTypefaceSpan.createText(getTitle(), typeface));
+
+        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, SecondActivity.class));
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 }

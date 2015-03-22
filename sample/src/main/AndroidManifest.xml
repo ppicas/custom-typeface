@@ -14,8 +14,9 @@
     License for the specific language governing permissions and limitations under
     the License.
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="cat.ppicas.customtypeface.sample">
+<manifest
+        package="cat.ppicas.customtypeface.sample"
+        xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
             android:name=".App"
@@ -25,12 +26,17 @@
             android:theme="@style/AppTheme">
         <activity
                 android:name=".MainActivity"
-                android:label="@string/title_activity_main">
+                android:label="@string/title_activity_main"
+                android:windowSoftInputMode="stateHidden">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+                android:name=".SecondActivity"
+                android:label="@string/title_activity_second"
+                android:theme="@style/AppThemeClassic"/>
     </application>
 
 </manifest>

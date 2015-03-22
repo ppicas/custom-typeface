@@ -15,7 +15,13 @@
 -->
 <resources>
 
-    <style name="AppTheme" parent="android:Theme.Light">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:textViewStyle">@style/TextView</item>
+        <item name="android:buttonStyle">@style/Button</item>
+        <item name="allCapsTextViewStyle">@style/AllCapsTextView</item>
+    </style>
+
+    <style name="AppThemeClassic" parent="android:Theme.Light">
         <item name="android:textViewStyle">@style/TextView</item>
         <item name="android:buttonStyle">@style/Button</item>
         <item name="allCapsTextViewStyle">@style/AllCapsTextView</item>
