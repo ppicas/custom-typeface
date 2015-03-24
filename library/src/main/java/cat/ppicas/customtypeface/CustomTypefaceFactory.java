@@ -16,6 +16,7 @@
 
 package cat.ppicas.customtypeface;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
@@ -32,10 +33,44 @@ import java.util.HashMap;
  *
  * <p>
  * This class can also accept another {@code LayoutInflater.Factory} implementation to delegate
- * the {@code View} creation first. If the delegated {@code LayoutInflater.Factory} returns
- * {@code null} on the {@code View} creation, this class will then use the internal
+ * the view creation first. If the delegated {@code LayoutInflater.Factory} returns
+ * {@code null} on the view creation, this class will then use the internal
  * {@code View} factory. Please use {@link #CustomTypefaceFactory(Context, CustomTypeface,
  * LayoutInflater.Factory)} if you want this class to use a delegate {@code LayoutInflater.Factory}.
+ * </p>
+ *
+ * <p>
+ * Please, take in account that {@link LayoutInflater} only accepts the
+ * {@link LayoutInflater.Factory} to be set once. If you call {@link LayoutInflater#setFactory}
+ * on a {@code LayoutInflater} that already has one, it will throw a {@code RuntimeException}.
+ * This is why we recommend you to set the {@code Factory} before calling
+ * super.{@link Activity#onCreate onCreate} when you are overriding {@code Activity.onCreate}
+ * on your own {@code Activity}. Please, check the following example:
+ * </p>
+ *
+ * <pre><code>
+ * public class MainActivity extends Activity {
+ *
+ *     // ...
+ *
+ *     {@literal @Override}
+ *     protected void onCreate(Bundle savedInstanceState) {
+ *         getLayoutInflater().setFactory(new CustomTypefaceFactory(
+ *                 this, CustomTypeface.getInstance()));
+ *
+ *         super.onCreate(savedInstanceState);
+ *         setContentView(R.layout.activity_main);
+ *     }
+ *
+ *     // ...
+ *
+ * }
+ * </code></pre>
+ *
+ * <p>
+ * For more info on how to use this class in combination with {@link CustomTypeface} please
+ * check the {@link CustomTypeface documentation} of that class.
+ * </p>
  *
  * @see CustomTypeface
  * @see LayoutInflater.Factory

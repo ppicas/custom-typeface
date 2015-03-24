@@ -27,6 +27,9 @@ import cat.ppicas.customtypeface.CustomTypeface;
 import cat.ppicas.customtypeface.CustomTypefaceFactory;
 import cat.ppicas.customtypeface.CustomTypefaceSpan;
 
+/**
+ * Sample activity that shows how to use CustomTypeface combined with the AppCompat library.
+ */
 public class MainActivity extends ActionBarActivity {
 
     @Override
@@ -41,17 +44,14 @@ public class MainActivity extends ActionBarActivity {
         // 'View' creation to an specific factory. In this case we are passing 'this' as third
         // parameter because we want 'ActionBarActivity' from appcompat to do their own magic
         // to support material design on old devices.
+        //
         getLayoutInflater().setFactory(new CustomTypefaceFactory(
                 this, CustomTypeface.getInstance(), this));
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // This is the only way to change the Typeface of a title on an ActionBar. This is
-        // because the TextViews created for the ActionBars are not inflated using LayoutInflater.
-        Typeface typeface = CustomTypeface.getInstance().getTypeface(
-                getString(R.string.typeface_audiowide));
-        setTitle(CustomTypefaceSpan.createText(getTitle(), typeface));
+        applyCustomTypefaceToTitle();
 
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,5 +65,14 @@ public class MainActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private void applyCustomTypefaceToTitle() {
+        String typefaceName = getString(R.string.typeface_audiowide);
+        Typeface typeface = CustomTypeface.getInstance().getTypeface(typefaceName);
+
+        // This is the only way to change the Typeface of a title of an ActionBar. This is
+        // because the TextViews created for the ActionBars are not inflated using LayoutInflater.
+        setTitle(CustomTypefaceSpan.createText(getTitle(), typeface));
     }
 }

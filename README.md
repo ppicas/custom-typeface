@@ -1,7 +1,25 @@
 Custom Typeface
 ===============
 
-Android library to apply custom typefaces directly from layouts, styles or themes.
+Android library to apply custom typefaces directly from layouts, styles or themes. With
+this library, apply different typefaces on your layouts it's easy as:
+
+```xml
+
+  ...
+
+  <Button
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:customTypeface="permanent-marker"/>
+
+  ...
+
+```
+
+Please notice the `app:customTypeface` attribute on the `Button` tag. This attribute will
+let you specify any custom font typeface that it's available in TTF format. The only requirement
+is that you have to copy the TTF file into the assets folder in your app.
 
 Install
 -------
@@ -10,7 +28,7 @@ Open `build.gradle` file and include the following dependency:
 
 ```
 dependencies {
-    compile 'cat.ppicas.customtypeface:library:1.0.1'
+    compile 'cat.ppicas.customtypeface:library:2.0.0'
 }
 ```
 
@@ -38,33 +56,37 @@ public class App extends Application {
 }
 ```
 
-The next step is set `CustomTypeface` as the `Factory` for the `LayoutInflater` of each `Activity`.
-It's important to call `setFactory` *before* calling `setContentView`, otherwise the views
-will be inflated without applying any custom typeface. For you convenience you can create a
-base `Activity` class that overrides `onCreate` and calls `setFactory`. This will enable you
-to extend this class and avoid copy-paste the same line on each `Activity`.
+The next step is set `CustomTypefaceFactory` as the `Factory` for the `LayoutInflater` of each
+`Activity`. It's important to call `LayoutInflater#setFactory` *before* calling
+`super.Activity#onCreate`, otherwise the parent `Activity` could call `LayoutInflater#setFactory`
+before you. If this happens, you will not be able to set your `Factory` because `LayoutInflater`
+only accepts the `Factory` to be set once.
+
+For you convenience you can create a base `Activity` class that overrides `Activity#onCreate`
+and calls `setFactory`. This will enable you to extend this class and avoid copy-paste the same
+line on each `Activity`.
 
 ```java
 public class MainActivity extends Activity {
 
-  // ...
+    // ...
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        // Set CustomTypeface as LayoutInflater.Factory before call super.onCreate
+        getLayoutInflater().setFactory(new CustomTypefaceFactory(
+                this, CustomTypeface.getInstance()));
 
-    // Set CustomTypeface as LayoutInflater.Factory before call setContentView()
-    getLayoutInflater().setFactory(CustomTypeface.getInstance());
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
 
-    setContentView(R.layout.activity_main);
-  }
-
-  // ...
+    // ...
 
 }
 ```
 
-Now all the templates inflated in the context of this `Activity` will apply a
+Now all the templates inflated in the context of this `Activity` will have applied a
 custom `Typeface` if it's defined in the XML. Check the following layout file.
 
 ```xml
@@ -97,6 +119,42 @@ warnings.
 
 Also you can use the `customTypeface` attribute in your styles, themes and
 textAppearances as well. You can find some examples of this in the **sample** project.
+
+### AppCompat compatibility
+
+Some libraries rely on setting a `Factory` on the `LayoutInflater` to provide some additional
+features. For instance if your `Activity` extends `FragmentActivity`, it could not work if
+you first set `CustomTypefaceFactory` as a `Factory`. This is because `FragmentActivity`
+will try to also set its own `Factory`, but it will not be able since we already set
+one. A similar problem will also happen when extending `ActionBarActivity` from AppCompat library.
+
+To solve this kind of issues, `CustomTypefaceFactory` accepts a `Factory` as third parameter
+to delegate the `View` creation to another class. So it will let you to specify the `Factory`
+implementation from the framework or library to no loose any functionally provided. For instance
+in the case of `FragmentActivity`, we will have to pass the instance of the same `Activity`,
+since is the one that implements the `Factory` interface.
+
+Let's see an example:
+
+```java
+public class MainActivity extends FragmentActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        // 'CustomTypefaceFactory' accepts a 'LayoutInflater.Factory' as a third optional parameter.
+        // Please use this parameter if you want 'CustomTypefaceFactory' to first delegate the
+        // 'View' creation to an specific factory. In this case we are passing 'this' as third
+        // parameter because we want 'FragmentActivity' from v4 support library to do their own
+        // magic to support fragments on old devices.
+        getLayoutInflater().setFactory(new CustomTypefaceFactory(
+                        this, CustomTypeface.getInstance(), this));
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
+
+}
+```
 
 ### Custom views extending `TextView`
 

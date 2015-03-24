@@ -40,21 +40,18 @@ import java.util.List;
 import java.util.Map;
 
 import static android.view.LayoutInflater.Factory;
-import static android.view.LayoutInflater.Factory2;
 
 /**
  * This class can be used to automatically apply custom {@link Typeface} to views inflated from
  * any XML.
  *
  * <p>
- * This class is intended to be used as {@link LayoutInflater.Factory} implementation.
+ * This class is intended to be used as a parameter for {@link CustomTypefaceFactory}.
  * </p>
+ *
  * <p>
- * Alternatively this class can also be be used from a {@link Factory#onCreateView} method,
- * or from {@link Factory2#onCreateView}. From one of this methods just call to {@code #createView}
- * and it will take care to delegate the view creation to the system {@link LayoutInflater},
- * and after the creation try to apply a custom {@code Typeface} if the new created view is an
- * instance of {@link TextView}, or any other derived class.
+ * Alternatively this class can also be used calling {@link #applyTypeface(View, AttributeSet)}
+ * directly, and passing the {@link View} the {@link AttributeSet} result of an inflation.
  * </p>
  *
  * <p>
@@ -62,6 +59,7 @@ import static android.view.LayoutInflater.Factory2;
  * that you will use from the XML layouts. A good place to do this is in the {@code Application}
  * {@code onCreate} method.
  * </p>
+ *
  * <pre><code>
  * public class App extends Application {
  *     {@literal @Override}
@@ -81,14 +79,21 @@ import static android.view.LayoutInflater.Factory2;
  * </code></pre>
  *
  * <p>
- * The next step is set {@link CustomTypeface} as the {@link Factory} for the {@link LayoutInflater}
- * of each {@link Activity}. It's important to call {@link LayoutInflater#setFactory}
- * <strong>before</strong> calling {@link Activity#setContentView}, otherwise the views will be
- * inflated without applying any custom typeface. For you convenience you can create a base
- * {@code Activity} class that overrides {@link Activity#onCreate} and calls {@code setFactory}.
- * This will enable you to extend this class and avoid copy-paste the same line on
- * each {@code Activity}.
+ * The next step is set {@link CustomTypefaceFactory} as the {@link Factory} for the
+ * {@link LayoutInflater} of each {@link Activity}. It's important to call
+ * {@link LayoutInflater#setFactory} <strong>before</strong> calling
+ * super.{@link Activity#onCreate onCreate}, otherwise the parent {@code Activity} could
+ * call {@code LayoutInflater#setFactory} before you. If this happens, you will not be
+ * able to set your {@code Factory} because {@code LayoutInflater} only accepts the
+ * {@code Factory} to be set once.
  * </p>
+ *
+ * <p>
+ * For you convenience you can create a base {@code Activity} class that overrides
+ * {@link Activity#onCreate} and calls {@code setFactory}. This will enable you to extend this
+ * class and avoid copy-paste the same line on each {@code Activity}.
+ * </p>
+ *
  * <pre><code>
  * public class MainActivity extends Activity {
  *
@@ -96,11 +101,10 @@ import static android.view.LayoutInflater.Factory2;
  *
  *     {@literal @Override}
  *     protected void onCreate(Bundle savedInstanceState) {
+ *         getLayoutInflater().setFactory(new CustomTypefaceFactory(
+ *                 this, CustomTypeface.getInstance()));
+ *
  *         super.onCreate(savedInstanceState);
- *
- *         // Set CustomTypeface as LayoutInflater.Factory before call setContentView()
- *         getLayoutInflater().setFactory(CustomTypeface.getInstance());
- *
  *         setContentView(R.layout.activity_main);
  *     }
  *
@@ -110,7 +114,7 @@ import static android.view.LayoutInflater.Factory2;
  * </code></pre>
  *
  * <p>
- * Now all the templates inflated in the context of this {@code Activity} will apply a
+ * Now all the templates inflated in the context of this {@code Activity} will have applied a
  * custom {@code Typeface} if it's defined in the XML. Check the following layout file.
  * </p>
  * <pre>{@code
@@ -176,7 +180,7 @@ public class CustomTypeface {
 
     /**
      * Register the theme attributes with the default style for all the views extending
-     * {@link TextView} defined in the SDK. You can use this method if you create an
+     * {@link TextView} defined in Android SDK. You can use this method if you create an
      * instance of {@code CustomTypeface}, and you want to configure with the default
      * styles for the default android widgets.
      *

@@ -18,6 +18,7 @@ package cat.ppicas.customtypeface;
 
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -26,6 +27,15 @@ import android.text.style.MetricAffectingSpan;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Changes the typeface of the text to which the span is attached. You can attach this object
+ * as a markup inside an {@link Spannable} class, to modify the typeface of the selected part
+ * of the text.
+ *
+ * @see android.text.Spannable
+ * @see android.text.SpannableString
+ * @see android.text.SpannableStringBuilder
+ */
 public class CustomTypefaceSpan extends MetricAffectingSpan {
 
     private static final Map<Typeface, CustomTypefaceSpan> INSTANCE_MAP
@@ -47,10 +57,67 @@ public class CustomTypefaceSpan extends MetricAffectingSpan {
         }
     }
 
+    /**
+     * Creates a new {@link Spanned} {@link CharSequence} that has applied
+     * {@link CustomTypefaceSpan} along the whole string.
+     *
+     * @param charSequence a {@code CharSequence} containing the text that you want stylize
+     * @param typeface     the {@code Typeface} that you want to be applied on the text
+     * @return a new {@code CharSequence} with the {@code CustomTypefaceSpan} applied from the
+     * beginning to the end
+     * @see Spannable#setSpan
+     */
     public static CharSequence createText(CharSequence charSequence, Typeface typeface) {
-        SpannableString spannable = SpannableString.valueOf(charSequence);
+        Spannable spannable = new SpannableString(charSequence);
         spannable.setSpan(getInstance(typeface), 0, spannable.length(),
                 Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        return spannable;
+    }
+
+    /**
+     * Applies a {@link CustomTypefaceSpan} along the whole string to the passed
+     * {@link CharSequence}.
+     *
+     * <p>
+     * If {@code charSequence} implements {@link Spannable}, the same object will be modified
+     * an returned as result. Otherwise a new object will be created and returned as result.
+     * This behavior can be used to modify existing {@code CharSequence} without the need
+     * of creating a new object.
+     * </p>
+     *
+     * @param charSequence a {@code CharSequence} to apply the styles
+     * @param typeface     the {@code Typeface} that you want to be applied on the text
+     * @return the existing {@code CharSequence}, if the passed object implements {@link Spannable}.
+     * Otherwise a new object is returned with the {@code CustomTypefaceSpan} applied from the
+     * beginning to the end.
+     * @see Spannable#setSpan
+     */
+    public static CharSequence applyToText(CharSequence charSequence, Typeface typeface) {
+        return applyToText(charSequence, typeface, 0, charSequence.length());
+    }
+
+    /**
+     * This method does the same as {@link #applyToText(CharSequence, Typeface)}, but let you
+     * specify the start and end index where the span will be applied.
+     *
+     * @param charSequence a {@code CharSequence} to apply the styles
+     * @param typeface     the {@code Typeface} that you want to be applied on the text
+     * @param start        the start index where to apply the span
+     * @param end          the end index where to apply the span
+     * @return the existing {@code CharSequence}, if the passed object implements {@link Spannable}.
+     * Otherwise a new object is returned with the {@code CustomTypefaceSpan} applied from
+     * {@code start} to {@code end}.
+     * @see Spannable#setSpan
+     */
+    public static CharSequence applyToText(CharSequence charSequence, Typeface typeface,
+            int start, int end) {
+        Spannable spannable;
+        if (charSequence instanceof Spannable) {
+            spannable = (Spannable) charSequence;
+        } else {
+            spannable = SpannableString.valueOf(charSequence);
+        }
+        spannable.setSpan(getInstance(typeface), start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         return spannable;
     }
 
