@@ -19,6 +19,7 @@
         <item name="android:textViewStyle">@style/TextView</item>
         <item name="android:buttonStyle">@style/Button</item>
         <item name="allCapsTextViewStyle">@style/AllCapsTextView</item>
+        <item name="panelMenuListTheme">@style/PanelMenuListTheme</item>
     </style>
 
     <style name="AppThemeClassic" parent="android:Theme.Light">
@@ -42,6 +43,13 @@
     <style name="AllCapsTextView" parent="TextView">
         <!-- All the AllCapsTextView will use Permanent Marker typeface -->
         <item name="customTypeface">@string/typeface_permanent_marker</item>
+    </style>
+
+    <style name="PanelMenuListTheme" parent="Theme.AppCompat.CompactMenu">
+        <!-- Prevents the application of a custom TextAppearance on the menu items from devices
+        with physical menu key. If a TextAppearance is applied on a TextView after the inflation,
+        the setTextAppearance method will reset the TextView typeface. -->
+        <item name="android:itemTextAppearance">@null</item>
     </style>
 
 </resources>

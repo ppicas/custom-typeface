@@ -75,50 +75,34 @@ public class CustomTypefaceSpan extends MetricAffectingSpan {
     }
 
     /**
-     * Applies a {@link CustomTypefaceSpan} along the whole string to the passed
-     * {@link CharSequence}.
+     * Applies a {@link CustomTypefaceSpan} along the whole passed {@link CharSequence}.
+     * The {@code charSequence} must implement {@link Spannable}, otherwise this method
+     * won't do anything.
      *
-     * <p>
-     * If {@code charSequence} implements {@link Spannable}, the same object will be modified
-     * an returned as result. Otherwise a new object will be created and returned as result.
-     * This behavior can be used to modify existing {@code CharSequence} without the need
-     * of creating a new object.
-     * </p>
-     *
-     * @param charSequence a {@code CharSequence} to apply the styles
+     * @param charSequence a {@code CharSequence} implementing {@code Spannable} to apply the styles
      * @param typeface     the {@code Typeface} that you want to be applied on the text
-     * @return the existing {@code CharSequence}, if the passed object implements {@link Spannable}.
-     * Otherwise a new object is returned with the {@code CustomTypefaceSpan} applied from the
-     * beginning to the end.
      * @see Spannable#setSpan
      */
-    public static CharSequence applyToText(CharSequence charSequence, Typeface typeface) {
-        return applyToText(charSequence, typeface, 0, charSequence.length());
+    public static void applyToText(CharSequence charSequence, Typeface typeface) {
+        applyToText(charSequence, typeface, 0, charSequence.length());
     }
 
     /**
      * This method does the same as {@link #applyToText(CharSequence, Typeface)}, but let you
      * specify the start and end index where the span will be applied.
      *
-     * @param charSequence a {@code CharSequence} to apply the styles
+     * @param charSequence a {@code CharSequence} implementing {@code Spannable} to apply the styles
      * @param typeface     the {@code Typeface} that you want to be applied on the text
      * @param start        the start index where to apply the span
      * @param end          the end index where to apply the span
-     * @return the existing {@code CharSequence}, if the passed object implements {@link Spannable}.
-     * Otherwise a new object is returned with the {@code CustomTypefaceSpan} applied from
-     * {@code start} to {@code end}.
      * @see Spannable#setSpan
      */
-    public static CharSequence applyToText(CharSequence charSequence, Typeface typeface,
+    public static void applyToText(CharSequence charSequence, Typeface typeface,
             int start, int end) {
-        Spannable spannable;
         if (charSequence instanceof Spannable) {
-            spannable = (Spannable) charSequence;
-        } else {
-            spannable = SpannableString.valueOf(charSequence);
+            Spannable spannable = (Spannable) charSequence;
+            spannable.setSpan(getInstance(typeface), start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         }
-        spannable.setSpan(getInstance(typeface), start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        return spannable;
     }
 
     @Override
